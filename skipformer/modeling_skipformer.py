@@ -383,8 +383,11 @@ class SkipformerModel(SkipformerPreTrainedModel):
         #                }
 
         SKIPFORMERS = {'gpt2-small':   GPT2Small,
+                       'gpt2-medium':  GPT2Medium,
+                       'gpt2-large':   GPT2Large,
                        'gpt2-small-w': GPT2Small,
                        'skipformer-a': SkipformerA,
+                       'skipformer-a-medium': SkipformerAMedium,
                        'skipformer-b': SkipformerB}
         #
         # self.embed_dim = config.hidden_size
@@ -416,7 +419,7 @@ class SkipformerModel(SkipformerPreTrainedModel):
             for block in self.h:
                 for layer in block.modules():
                     if hasattr(layer, 'attention_window') and layer.attention_window:
-                        config.attention_window_layers.append(layer)
+                        self.attention_window_layers.append(layer)
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -1333,6 +1336,350 @@ class GPT2Small(nn.Module):
             outputs = (hidden_states,) + outputs[1:]
         return outputs
 
+class GPT2Medium(nn.Module):
+    def __init__(self, config, layer_idx=None):
+        super(GPT2Medium, self).__init__()
+        #78173
+        #encoder layers
+
+        self.gpt2_small_1 = GPT2Small(config)
+        self.gpt2_small_2 = GPT2Small(config)
+
+
+
+    def forward(
+        self,
+        hidden_states: Optional[Tuple[torch.FloatTensor]],
+        layer_past: Optional[Tuple[torch.Tensor]] = None,
+        attention_mask: Optional[torch.FloatTensor] = None,
+        head_mask: Optional[torch.FloatTensor] = None,
+        encoder_hidden_states: Optional[torch.Tensor] = None,
+        encoder_attention_mask: Optional[torch.FloatTensor] = None,
+        use_cache: Optional[bool] = False,
+        output_attentions: Optional[bool] = False,
+    ):
+        #encoder forward
+
+        hidden_states, _ = self.gpt2_small_1(hidden_states, 
+                                     layer_past,
+                                    attention_mask,
+                                    head_mask,
+                                    encoder_hidden_states,
+                                    encoder_attention_mask,
+                                    use_cache,
+                                    output_attentions)
+        
+        
+
+        output = self.gpt2_small_2(hidden_states, 
+                                layer_past,
+                            attention_mask,
+                            head_mask,
+                            encoder_hidden_states,
+                            encoder_attention_mask,
+                            use_cache,
+                            output_attentions) 
+        return output
+
+
+class GPT2Large(nn.Module):
+    def __init__(self, config, layer_idx=None):
+        super(GPT2Large, self).__init__()
+        #78173
+        #encoder layers
+        self.dropout0 = nn.Dropout(config.resid_pdrop)
+        self.layernorm0 = nn.LayerNorm(1280, eps=config.layer_norm_epsilon)
+        self.maskedautomaticsparsemultiheadattention0 = SkipformerAttention(config, layer_idx=0, embed_dim=1280,  num_heads=20)
+        self.dropout1 = nn.Dropout(config.resid_pdrop)
+        self.layernorm1 = nn.LayerNorm(1280, eps=config.layer_norm_epsilon)
+        self.linear0 = nn.Linear(1280, 3072)
+        self.gelu0 = nn.GELU()
+        self.linear1 = nn.Linear(3072, 1280)
+        self.dropout2 = nn.Dropout(config.resid_pdrop)
+        self.layernorm2 = nn.LayerNorm(1280, eps=config.layer_norm_epsilon)
+        self.maskedautomaticsparsemultiheadattention1 = SkipformerAttention(config, layer_idx=1, embed_dim=1280,  num_heads=20)
+        self.dropout3 = nn.Dropout(config.resid_pdrop)
+        self.layernorm3 = nn.LayerNorm(1280, eps=config.layer_norm_epsilon)
+        self.linear2 = nn.Linear(1280, 3072)
+        self.gelu1 = nn.GELU()
+        self.linear3 = nn.Linear(3072, 1280)
+        self.dropout4 = nn.Dropout(config.resid_pdrop)
+        self.layernorm4 = nn.LayerNorm(1280, eps=config.layer_norm_epsilon)
+        self.maskedautomaticsparsemultiheadattention2 = SkipformerAttention(config, layer_idx=2, embed_dim=1280,  num_heads=20)
+        self.dropout5 = nn.Dropout(config.resid_pdrop)
+        self.layernorm5 = nn.LayerNorm(1280, eps=config.layer_norm_epsilon)
+        self.linear4 = nn.Linear(1280, 3072)
+        self.gelu2 = nn.GELU()
+        self.linear5 = nn.Linear(3072, 1280)
+        self.dropout6 = nn.Dropout(config.resid_pdrop)
+        self.layernorm6 = nn.LayerNorm(1280, eps=config.layer_norm_epsilon)
+        self.maskedautomaticsparsemultiheadattention3 = SkipformerAttention(config, layer_idx=3, embed_dim=1280,  num_heads=20)
+        self.dropout7 = nn.Dropout(config.resid_pdrop)
+        self.layernorm7 = nn.LayerNorm(1280, eps=config.layer_norm_epsilon)
+        self.linear6 = nn.Linear(1280, 3072)
+        self.gelu3 = nn.GELU()
+        self.linear7 = nn.Linear(3072, 1280)
+        self.dropout8 = nn.Dropout(config.resid_pdrop)
+        self.layernorm8 = nn.LayerNorm(1280, eps=config.layer_norm_epsilon)
+        self.maskedautomaticsparsemultiheadattention4 = SkipformerAttention(config, layer_idx=4, embed_dim=1280,  num_heads=20)
+        self.dropout9 = nn.Dropout(config.resid_pdrop)
+        self.layernorm9 = nn.LayerNorm(1280, eps=config.layer_norm_epsilon)
+        self.linear8 = nn.Linear(1280, 3072)
+        self.gelu4 = nn.GELU()
+        self.linear9 = nn.Linear(3072, 1280)
+        self.dropout10 = nn.Dropout(config.resid_pdrop)
+        self.layernorm10 = nn.LayerNorm(1280, eps=config.layer_norm_epsilon)
+        self.maskedautomaticsparsemultiheadattention5 = SkipformerAttention(config, layer_idx=5, embed_dim=1280,  num_heads=20)
+        self.dropout11 = nn.Dropout(config.resid_pdrop)
+        self.layernorm11 = nn.LayerNorm(1280, eps=config.layer_norm_epsilon)
+        self.linear10 = nn.Linear(1280, 3072)
+        self.gelu5 = nn.GELU()
+        self.linear11 = nn.Linear(3072, 1280)
+        self.dropout12 = nn.Dropout(config.resid_pdrop)
+        self.layernorm12 = nn.LayerNorm(1280, eps=config.layer_norm_epsilon)
+        self.maskedautomaticsparsemultiheadattention6 = SkipformerAttention(config, layer_idx=6, embed_dim=1280,  num_heads=20)
+        self.dropout13 = nn.Dropout(config.resid_pdrop)
+        self.layernorm13 = nn.LayerNorm(1280, eps=config.layer_norm_epsilon)
+        self.linear12 = nn.Linear(1280, 3072)
+        self.gelu6 = nn.GELU()
+        self.linear13 = nn.Linear(3072, 1280)
+        self.dropout14 = nn.Dropout(config.resid_pdrop)
+        self.layernorm14 = nn.LayerNorm(1280, eps=config.layer_norm_epsilon)
+        self.maskedautomaticsparsemultiheadattention7 = SkipformerAttention(config, layer_idx=7, embed_dim=1280,  num_heads=20)
+        self.dropout15 = nn.Dropout(config.resid_pdrop)
+        self.layernorm15 = nn.LayerNorm(1280, eps=config.layer_norm_epsilon)
+        self.linear14 = nn.Linear(1280, 3072)
+        self.gelu7 = nn.GELU()
+        self.linear15 = nn.Linear(3072, 1280)
+        self.dropout16 = nn.Dropout(config.resid_pdrop)
+        self.layernorm16 = nn.LayerNorm(1280, eps=config.layer_norm_epsilon)
+        self.maskedautomaticsparsemultiheadattention8 = SkipformerAttention(config, layer_idx=8, embed_dim=1280,  num_heads=20)
+        self.dropout17 = nn.Dropout(config.resid_pdrop)
+        self.layernorm17 = nn.LayerNorm(1280, eps=config.layer_norm_epsilon)
+        self.linear16 = nn.Linear(1280, 3072)
+        self.gelu8 = nn.GELU()
+        self.linear17 = nn.Linear(3072, 1280)
+        self.dropout18 = nn.Dropout(config.resid_pdrop)
+        self.layernorm18 = nn.LayerNorm(1280, eps=config.layer_norm_epsilon)
+        self.maskedautomaticsparsemultiheadattention9 = SkipformerAttention(config, layer_idx=9, embed_dim=1280,  num_heads=20)
+        self.dropout19 = nn.Dropout(config.resid_pdrop)
+        self.layernorm19 = nn.LayerNorm(1280, eps=config.layer_norm_epsilon)
+        self.linear18 = nn.Linear(1280, 3072)
+        self.gelu9 = nn.GELU()
+        self.linear19 = nn.Linear(3072, 1280)
+        self.dropout20 = nn.Dropout(config.resid_pdrop)
+        self.layernorm20 = nn.LayerNorm(1280, eps=config.layer_norm_epsilon)
+        self.maskedautomaticsparsemultiheadattention10 = SkipformerAttention(config, layer_idx=10, embed_dim=1280,  num_heads=20)
+        self.dropout21 = nn.Dropout(config.resid_pdrop)
+        self.layernorm21 = nn.LayerNorm(1280, eps=config.layer_norm_epsilon)
+        self.linear20 = nn.Linear(1280, 3072)
+        self.gelu10 = nn.GELU()
+        self.linear21 = nn.Linear(3072, 1280)
+        self.dropout22 = nn.Dropout(config.resid_pdrop)
+        self.layernorm22 = nn.LayerNorm(1280, eps=config.layer_norm_epsilon)
+        self.maskedautomaticsparsemultiheadattention11 = SkipformerAttention(config, layer_idx=11, embed_dim=1280,  num_heads=20)
+        self.dropout23 = nn.Dropout(config.resid_pdrop)
+        self.layernorm23 = nn.LayerNorm(1280, eps=config.layer_norm_epsilon)
+        self.linear22 = nn.Linear(1280, 3072)
+        self.gelu11 = nn.GELU()
+        self.linear23 = nn.Linear(3072, 1280)
+        self.dropout24 = nn.Dropout(config.resid_pdrop)
+        self.layernorm24 = nn.LayerNorm(1280, eps=config.layer_norm_epsilon)
+
+
+    def forward(
+        self,
+        hidden_states: Optional[Tuple[torch.FloatTensor]],
+        layer_past: Optional[Tuple[torch.Tensor]] = None,
+        attention_mask: Optional[torch.FloatTensor] = None,
+        head_mask: Optional[torch.FloatTensor] = None,
+        encoder_hidden_states: Optional[torch.Tensor] = None,
+        encoder_attention_mask: Optional[torch.FloatTensor] = None,
+        use_cache: Optional[bool] = False,
+        output_attentions: Optional[bool] = False,
+    ):
+        #encoder forward
+        hidden_states = self.dropout0(hidden_states)
+        skip0 = hidden_states #skip to self.dropout1
+
+        hidden_states = self.layernorm0(hidden_states)
+        hidden_states = self.maskedautomaticsparsemultiheadattention0(hidden_states, layer_past=layer_past, attention_mask=attention_mask, head_mask=head_mask, use_cache=use_cache, output_attentions=output_attentions,)[0]
+        hidden_states = self.dropout1(hidden_states)
+        hidden_states += skip0
+        skip1 = hidden_states #skip to self.dropout2
+
+        hidden_states = self.layernorm1(hidden_states)
+        hidden_states = self.linear0(hidden_states)
+        hidden_states = self.gelu0(hidden_states)
+        hidden_states = self.linear1(hidden_states)
+        hidden_states = self.dropout2(hidden_states)
+        hidden_states += skip1
+        skip2 = hidden_states #skip to self.dropout3
+
+        hidden_states = self.layernorm2(hidden_states)
+        hidden_states = self.maskedautomaticsparsemultiheadattention1(hidden_states, layer_past=layer_past, attention_mask=attention_mask, head_mask=head_mask, use_cache=use_cache, output_attentions=output_attentions,)[0]
+        hidden_states = self.dropout3(hidden_states)
+        hidden_states += skip2
+        skip3 = hidden_states #skip to self.dropout4
+
+        hidden_states = self.layernorm3(hidden_states)
+        hidden_states = self.linear2(hidden_states)
+        hidden_states = self.gelu1(hidden_states)
+        hidden_states = self.linear3(hidden_states)
+        hidden_states = self.dropout4(hidden_states)
+        hidden_states += skip3
+        skip4 = hidden_states #skip to self.dropout5
+
+        hidden_states = self.layernorm4(hidden_states)
+        hidden_states = self.maskedautomaticsparsemultiheadattention2(hidden_states, layer_past=layer_past, attention_mask=attention_mask, head_mask=head_mask, use_cache=use_cache, output_attentions=output_attentions,)[0]
+        hidden_states = self.dropout5(hidden_states)
+        hidden_states += skip4
+        skip5 = hidden_states #skip to self.dropout6
+
+        hidden_states = self.layernorm5(hidden_states)
+        hidden_states = self.linear4(hidden_states)
+        hidden_states = self.gelu2(hidden_states)
+        hidden_states = self.linear5(hidden_states)
+        hidden_states = self.dropout6(hidden_states)
+        hidden_states += skip5
+        skip6 = hidden_states #skip to self.dropout7
+
+        hidden_states = self.layernorm6(hidden_states)
+        hidden_states = self.maskedautomaticsparsemultiheadattention3(hidden_states, layer_past=layer_past, attention_mask=attention_mask, head_mask=head_mask, use_cache=use_cache, output_attentions=output_attentions,)[0]
+        hidden_states = self.dropout7(hidden_states)
+        hidden_states += skip6
+        skip7 = hidden_states #skip to self.dropout8
+
+        hidden_states = self.layernorm7(hidden_states)
+        hidden_states = self.linear6(hidden_states)
+        hidden_states = self.gelu3(hidden_states)
+        hidden_states = self.linear7(hidden_states)
+        hidden_states = self.dropout8(hidden_states)
+        hidden_states += skip7
+        skip8 = hidden_states #skip to self.dropout9
+
+        hidden_states = self.layernorm8(hidden_states)
+        hidden_states = self.maskedautomaticsparsemultiheadattention4(hidden_states, layer_past=layer_past, attention_mask=attention_mask, head_mask=head_mask, use_cache=use_cache, output_attentions=output_attentions,)[0]
+        hidden_states = self.dropout9(hidden_states)
+        hidden_states += skip8
+        skip9 = hidden_states #skip to self.dropout10
+
+        hidden_states = self.layernorm9(hidden_states)
+        hidden_states = self.linear8(hidden_states)
+        hidden_states = self.gelu4(hidden_states)
+        hidden_states = self.linear9(hidden_states)
+        hidden_states = self.dropout10(hidden_states)
+        hidden_states += skip9
+        skip10 = hidden_states #skip to self.dropout11
+
+        hidden_states = self.layernorm10(hidden_states)
+        hidden_states = self.maskedautomaticsparsemultiheadattention5(hidden_states, layer_past=layer_past, attention_mask=attention_mask, head_mask=head_mask, use_cache=use_cache, output_attentions=output_attentions,)[0]
+        hidden_states = self.dropout11(hidden_states)
+        hidden_states += skip10
+        skip11 = hidden_states #skip to self.dropout12
+
+        hidden_states = self.layernorm11(hidden_states)
+        hidden_states = self.linear10(hidden_states)
+        hidden_states = self.gelu5(hidden_states)
+        hidden_states = self.linear11(hidden_states)
+        hidden_states = self.dropout12(hidden_states)
+        hidden_states += skip11
+        skip12 = hidden_states #skip to self.dropout13
+
+        hidden_states = self.layernorm12(hidden_states)
+        hidden_states = self.maskedautomaticsparsemultiheadattention6(hidden_states, layer_past=layer_past, attention_mask=attention_mask, head_mask=head_mask, use_cache=use_cache, output_attentions=output_attentions,)[0]
+        hidden_states = self.dropout13(hidden_states)
+        hidden_states += skip12
+        skip13 = hidden_states #skip to self.dropout14
+
+        hidden_states = self.layernorm13(hidden_states)
+        hidden_states = self.linear12(hidden_states)
+        hidden_states = self.gelu6(hidden_states)
+        hidden_states = self.linear13(hidden_states)
+        hidden_states = self.dropout14(hidden_states)
+        hidden_states += skip13
+        skip14 = hidden_states #skip to self.dropout15
+
+        hidden_states = self.layernorm14(hidden_states)
+        hidden_states = self.maskedautomaticsparsemultiheadattention7(hidden_states, layer_past=layer_past, attention_mask=attention_mask, head_mask=head_mask, use_cache=use_cache, output_attentions=output_attentions,)[0]
+        hidden_states = self.dropout15(hidden_states)
+        hidden_states += skip14
+        skip15 = hidden_states #skip to self.dropout16
+
+        hidden_states = self.layernorm15(hidden_states)
+        hidden_states = self.linear14(hidden_states)
+        hidden_states = self.gelu7(hidden_states)
+        hidden_states = self.linear15(hidden_states)
+        hidden_states = self.dropout16(hidden_states)
+        hidden_states += skip15
+        skip16 = hidden_states #skip to self.dropout17
+
+        hidden_states = self.layernorm16(hidden_states)
+        hidden_states = self.maskedautomaticsparsemultiheadattention8(hidden_states, layer_past=layer_past, attention_mask=attention_mask, head_mask=head_mask, use_cache=use_cache, output_attentions=output_attentions,)[0]
+        hidden_states = self.dropout17(hidden_states)
+        hidden_states += skip16
+        skip17 = hidden_states #skip to self.dropout18
+
+        hidden_states = self.layernorm17(hidden_states)
+        hidden_states = self.linear16(hidden_states)
+        hidden_states = self.gelu8(hidden_states)
+        hidden_states = self.linear17(hidden_states)
+        hidden_states = self.dropout18(hidden_states)
+        hidden_states += skip17
+        skip18 = hidden_states #skip to self.dropout19
+
+        hidden_states = self.layernorm18(hidden_states)
+        hidden_states = self.maskedautomaticsparsemultiheadattention9(hidden_states, layer_past=layer_past, attention_mask=attention_mask, head_mask=head_mask, use_cache=use_cache, output_attentions=output_attentions,)[0]
+        hidden_states = self.dropout19(hidden_states)
+        hidden_states += skip18
+        skip19 = hidden_states #skip to self.dropout20
+
+        hidden_states = self.layernorm19(hidden_states)
+        hidden_states = self.linear18(hidden_states)
+        hidden_states = self.gelu9(hidden_states)
+        hidden_states = self.linear19(hidden_states)
+        hidden_states = self.dropout20(hidden_states)
+        hidden_states += skip19
+        skip20 = hidden_states #skip to self.dropout21
+
+        hidden_states = self.layernorm20(hidden_states)
+        hidden_states = self.maskedautomaticsparsemultiheadattention10(hidden_states, layer_past=layer_past, attention_mask=attention_mask, head_mask=head_mask, use_cache=use_cache, output_attentions=output_attentions,)[0]
+        hidden_states = self.dropout21(hidden_states)
+        hidden_states += skip20
+        skip21 = hidden_states #skip to self.dropout22
+
+        hidden_states = self.layernorm21(hidden_states)
+        hidden_states = self.linear20(hidden_states)
+        hidden_states = self.gelu10(hidden_states)
+        hidden_states = self.linear21(hidden_states)
+        hidden_states = self.dropout22(hidden_states)
+        hidden_states += skip21
+        skip22 = hidden_states #skip to self.dropout23
+
+        hidden_states = self.layernorm22(hidden_states)
+        attn_output = self.maskedautomaticsparsemultiheadattention11(hidden_states, layer_past=layer_past, attention_mask=attention_mask, head_mask=head_mask, use_cache=use_cache, output_attentions=output_attentions,)
+        hidden_states = attn_output[0]
+        outputs = attn_output[1:]
+        hidden_states = self.dropout23(hidden_states)
+        hidden_states += skip22
+        skip23 = hidden_states #skip to self.dropout24
+
+        hidden_states = self.layernorm23(hidden_states)
+        hidden_states = self.linear22(hidden_states)
+        hidden_states = self.gelu11(hidden_states)
+        hidden_states = self.linear23(hidden_states)
+        hidden_states = self.dropout24(hidden_states)
+        hidden_states += skip23
+        hidden_states = self.layernorm24(hidden_states)
+
+
+        if use_cache:
+            outputs = (hidden_states,) + outputs
+        else:
+            outputs = (hidden_states,) + outputs[1:]
+        return outputs
+
+
 class SkipformerA(nn.Module):
     def __init__(self, config, layer_idx=None):
         super(SkipformerA, self).__init__()
@@ -1621,6 +1968,47 @@ class SkipformerA(nn.Module):
         else:
             outputs = (hidden_states,) + outputs[1:]
         return outputs
+
+class SkipformerAMedium(nn.Module):
+    def __init__(self, config, layer_idx=None):
+        super(SkipformerAMedium, self).__init__()
+
+        self.skipformer_a_1 = SkipformerA(config)
+        self.skipformer_a_2 =SkipformerA(config)
+
+
+
+    def forward(
+        self,
+        hidden_states: Optional[Tuple[torch.FloatTensor]],
+        layer_past: Optional[Tuple[torch.Tensor]] = None,
+        attention_mask: Optional[torch.FloatTensor] = None,
+        head_mask: Optional[torch.FloatTensor] = None,
+        encoder_hidden_states: Optional[torch.Tensor] = None,
+        encoder_attention_mask: Optional[torch.FloatTensor] = None,
+        use_cache: Optional[bool] = False,
+        output_attentions: Optional[bool] = False,
+    ):
+        hidden_states, _ = self.skipformer_a_1(hidden_states, 
+                                     layer_past,
+                                    attention_mask,
+                                    head_mask,
+                                    encoder_hidden_states,
+                                    encoder_attention_mask,
+                                    use_cache,
+                                    output_attentions)
+        
+        
+
+        output = self.skipformer_a_2(hidden_states, 
+                                layer_past,
+                            attention_mask,
+                            head_mask,
+                            encoder_hidden_states,
+                            encoder_attention_mask,
+                            use_cache,
+                            output_attentions) 
+        return output
 
 
 class SkipformerB(nn.Module):

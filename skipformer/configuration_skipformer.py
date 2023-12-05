@@ -8,8 +8,11 @@ logger = logging.get_logger(__name__)
 root_dir = os.path.join(os.path.dirname(__file__))
 SKIPFORMER_PRETRAINED_CONFIG = {
     "gpt2-small":   os.path.join(root_dir, "models", "gpt2-small", "config.json"),
+    "gpt2-medium":   os.path.join(root_dir, "models", "gpt2-medium", "config.json"),
+    "gpt2-large":   os.path.join(root_dir, "models", "gpt2-large", "config.json"),
     "gpt2-small-w": os.path.join(root_dir, "models", "gpt2-small-w", "config.json"),
     "skipformer-a": os.path.join(root_dir, "models", "skipformer-a", "config.json"),
+    "skipformer-a-medium": os.path.join(root_dir, "models", "skipformer-a-medium", "config.json"),
     "skipformer-b": os.path.join(root_dir, "models", "skipformer-b", "config.json")
 }
 
