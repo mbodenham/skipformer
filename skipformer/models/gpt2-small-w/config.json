@@ -11,7 +11,8 @@
   "in_dim": 768,
   "initializer_range": 0.02,
   "layer_norm_epsilon": 1e-05,
-  "model_type": "gpt2-small-w",
+  "model_subtype": "gpt2-small-w",
+  "model_type": "skipformer",
   "n_embd": 768,
   "n_head": 12,
   "n_inner": null,
@@ -35,5 +36,5 @@
   "use_auth_token": null,
   "use_cache": true,
   "vocab_size": 50259,
-  "window_attention": true
+  "attention_window": true
 }
