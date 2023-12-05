@@ -18,10 +18,13 @@ from transformers.utils.versions import require_version
 
 from skipformer import SkipformerLMHeadModel, SkipformerConfig, SkipformerTrainer, LogWindowSize, parser, SkipformerTokenizer, SkipformerTokenizerFast, SKIPFORMER_PRETRAINED_CONFIG
 
+import time
+
 check_min_version("4.25.1")
 require_version("datasets>=1.8.0", "To fix: pip install -r examples/pytorch/language-modeling/requirements.txt")
 logging.getLogger("datasets.arrow_dataset").setLevel(logging.CRITICAL)
 logger = logging.getLogger(__name__)
+
 
 def main():
     if len(sys.argv) == 2 and sys.argv[1].endswith(".json"):
@@ -71,12 +74,21 @@ def main():
 
     # Get datasets
     if data_args.dataset_name is not None:
-        raw_datasets = load_dataset(
-            data_args.dataset_name,
-            data_args.dataset_config_name,
-            cache_dir=model_args.cache_dir,
-            use_auth_token=True if model_args.use_auth_token else None,
-        )
+        while True:
+            try:
+                raw_datasets = load_dataset(
+                    data_args.dataset_name,
+                    data_args.dataset_config_name,
+                    cache_dir=model_args.cache_dir,
+                    use_auth_token=True if model_args.use_auth_token else None,
+                )
+                break
+            except Exception as e:
+                print(e)
+                print("Retrying connection...")
+                time.sleep(0.1)
+
+
         if "validation" not in raw_datasets.keys():
             raw_datasets["validation"] = load_dataset(
                 data_args.dataset_name,
