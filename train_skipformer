@@ -1,0 +1,31 @@
+#!/bin/bash
+export OMP_NUM_THREADS=8
+NGPUS=$(nvidia-smi --list-gpus | wc -l)
+# NGPUS=1
+
+MODEL=$1
+BS=6
+GPU=$(nvidia-smi --id=0 --query-gpu=name --format=csv,noheader)
+if [[ "$GPU" == *"A100"* ]]; then
+  BS=$(( BS*2 ))
+fi
+echo "Model: ${MODEL}, Batch Size: ${BS}"
+
+python -m torch.distributed.launch \
+          --nproc_per_node=$NGPUS run_clm.py \
+          --model_type skipformer \
+          --model_subtype $MODEL \
+          --output_dir logs/language-modeling/openwebtext/$MODEL \
+          --cache_dir data \
+          --dataset_name openwebtext \
+          --dataset_config_name plain_text \
+          --tokenizer_name skipformer/tokenizer \
+          --do_train --do_eval  \
+          --per_device_train_batch_size $BS \
+          --per_device_eval_batch_size 4 \
+          --num_train_epochs 2 \
+          --save_strategy epoch \
+          --evaluation_strategy epoch \
+          --logging_steps 500 \
+          --preprocessing_num_workers 64 \
+          --ddp_find_unused_parameters 0
