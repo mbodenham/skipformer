@@ -4,7 +4,7 @@ NGPUS=$(nvidia-smi --list-gpus | wc -l)
 # NGPUS=1
 
 MODEL=$1
-BS=6
+BS=3
 GPU=$(nvidia-smi --id=0 --query-gpu=name --format=csv,noheader)
 if [[ "$GPU" == *"A100"* ]]; then
   BS=$(( BS*2 ))
@@ -17,15 +17,13 @@ python -m torch.distributed.launch \
           --model_subtype $MODEL \
           --output_dir logs/language-modeling/openwebtext/$MODEL \
           --cache_dir data \
-          --dataset_name openwebtext \
+          --dataset_name Skylion007/openwebtext \
           --dataset_config_name plain_text \
           --tokenizer_name skipformer/tokenizer \
-          --do_train --do_eval  \
+          --do_train \
           --per_device_train_batch_size $BS \
-          --per_device_eval_batch_size 4 \
           --num_train_epochs 2 \
-          --save_strategy epoch \
-          --evaluation_strategy epoch \
+          --save_steps 87217 \
           --logging_steps 500 \
           --preprocessing_num_workers 64 \
           --ddp_find_unused_parameters 0

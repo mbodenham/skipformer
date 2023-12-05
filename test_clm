@@ -6,7 +6,7 @@ NGPUS=1
 MODEL=$1
 BS=16
 
-# #WikiText-103
+#WikiText-103
 python -m torch.distributed.launch \
           --nproc_per_node=$NGPUS run_clm.py \
           --model_name_or_path logs/language-modeling/openwebtext/$MODEL \
@@ -77,7 +77,7 @@ python -m torch.distributed.launch \
           --per_device_eval_batch_size $BS \
           --preprocessing_num_workers 64 \
           --do_eval \
-          --dataset_name openwebtext \
+          --dataset_name Skylion007/openwebtext \
           --dataset_config_name plain_text
 if [ $? -ne 0 ]
 then
