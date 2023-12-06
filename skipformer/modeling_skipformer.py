@@ -961,7 +961,7 @@ class AdaptiveWindow(nn.Module):
         self.current_val = Parameter(torch.empty((num_heads, 1), **factory_kwargs))
         nn.init.constant_(self.current_val, init_val)
 
-        z = self.current_val.view(1, self.num_heads, 1, 1)
+        z = self.current_val.view(self.num_heads, 1, 1)
         mask = self.mask_func(self.mask_template, z, self.max_window_size, self.window_ramp_size)
         self.register_buffer('mask', mask)
         self.window_size = None
@@ -969,7 +969,6 @@ class AdaptiveWindow(nn.Module):
 
     def forward(self, q, k, masked=True):
         if self.training:
-            z = self.current_val.view(self.num_heads, 1, 1)
             self.mask = self.mask_func(self.mask_template, z, self.max_window_size, self.window_ramp_size)
 
             x = torch.matmul(q, k) * self.mask
