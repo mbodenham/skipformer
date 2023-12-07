@@ -21,7 +21,7 @@ from transformers.utils import (
     logging,
 )
 from transformers.utils.model_parallel_utils import assert_device_map, get_device_map
-from .configuration_skipformer import SkipformerConfig
+from .configuration import SkipformerConfig
 from . import attention_window_matmul
 # from .blocks import SkipformerBlock1, SkipformerBlock2, SkipformerBlock3, SkipformerBlock4
 

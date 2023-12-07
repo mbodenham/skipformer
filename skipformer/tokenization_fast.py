@@ -7,7 +7,7 @@ from tokenizers import pre_tokenizers
 from transformers.tokenization_utils_base import BatchEncoding
 from transformers.tokenization_utils_fast import PreTrainedTokenizerFast
 from transformers.utils import logging
-from .tokenization_skipformer import SkipformerTokenizer
+from .tokenization import SkipformerTokenizer
 
 
 if TYPE_CHECKING:

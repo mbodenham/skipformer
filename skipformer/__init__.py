@@ -7,8 +7,8 @@ from transformers.utils import (
 )
 
 _import_structure = {
-    "configuration_skipformer": ["SKIPFORMER_PRETRAINED_CONFIG", "SkipformerConfig"],
-    "tokenization_skipformer": ["SkipformerTokenizer"],
+    "configuration": ["SKIPFORMER_PRETRAINED_CONFIG", "SkipformerConfig"],
+    "tokenization": ["SkipformerTokenizer"],
     "trainer": ["SkipformerTrainer", "LogWindowSize"],
     "args": ['parser']
 }
@@ -19,7 +19,7 @@ try:
 except OptionalDependencyNotAvailable:
     pass
 else:
-    _import_structure["tokenization_skipformer_fast"] = ["SkipformerTokenizerFast"]
+    _import_structure["tokenization_fast"] = ["SkipformerTokenizerFast"]
 
 try:
     if not is_torch_available():
@@ -27,7 +27,7 @@ try:
 except OptionalDependencyNotAvailable:
     pass
 else:
-    _import_structure["modeling_skipformer"] = [
+    _import_structure["modeling"] = [
         "SKIPFORMERPRETRAINED_MODEL_ARCHIVE_LIST",
         # "GPT2DoubleHeadsModel",
         "SkipformerForSequenceClassification",
@@ -40,8 +40,8 @@ else:
     _import_structure['attention_window_cuda'] = ["attention_window_matmul"]
 
 if TYPE_CHECKING:
-    from .configuration_skipformer import SKIPFORMER_PRETRAINED_CONFIG, SkipformerConfig
-    from .tokenization_skipformer import SkipformerTokenizer
+    from .configuration import SKIPFORMER_PRETRAINED_CONFIG, SkipformerConfig
+    from .tokenization import SkipformerTokenizer
     from .args import parser
 
     try:
@@ -50,7 +50,7 @@ if TYPE_CHECKING:
     except OptionalDependencyNotAvailable:
         pass
     else:
-        from .tokenization_skipformer_fast import SkipformerTokenizerFast
+        from .tokenization_fast import SkipformerTokenizerFast
 
     try:
         if not is_torch_available():
@@ -58,7 +58,7 @@ if TYPE_CHECKING:
     except OptionalDependencyNotAvailable:
         pass
     else:
-        from .modeling_skipformer import (
+        from .modeling import (
             SKIPFORMERPRETRAINED_MODEL_ARCHIVE_LIST,
             # GPT2DoubleHeadsModel,
             SkipformerForSequenceClassification,
