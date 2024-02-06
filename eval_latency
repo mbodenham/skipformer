@@ -1,0 +1,18 @@
+#!/bin/bash
+export OMP_NUM_THREADS=8
+NGPUS=1
+# NGPUS=1
+
+MODEL=$1
+BS=4
+echo "Model: ${MODEL}"
+
+
+python -m torch.distributed.launch \
+          --nproc_per_node=$NGPUS run_clm.py \
+          --model_name_or_path logs/language-modeling/openwebtext/$MODEL \
+          --output_dir logs_temp/language-modeling/ptb/$MODEL \
+          --cache_dir data \
+          --per_device_eval_batch_size $BS \
+          --preprocessing_num_workers 64 \
+          --dataset_name ptb_text_only

@@ -64,47 +64,19 @@ class SkipformerTrainer(Trainer):
 
     def compute_latency(
             self,
-            repetitions: int = 100,
-            attention_window: bool = True,
-            masked: bool = True,
+            repetitions: int = 1000,
             profile: bool = False,
         ) -> float:
 
 
-        # model = self._wrap_model(self.model, training=False)
         model = self.model
         model.eval()
 
-
         print(f"***** Collecting Latency *****")
         print(f"\tRepetitions: {repetitions}")
-        print(f"\tAttention Window: {attention_window}")
-
         device = self.args.device
         N = 1024
         with torch.no_grad():
-            if isinstance(model, DistributedDataParallel) or isinstance(model, DataParallel):
-                attention_layers = model.module.transformer.attention_window_layers
-            else:
-                attention_layers = model.transformer.attention_window_layers
-
-            windows = []
-            for layer in attention_layers:
-                if not attention_window:
-                    # layer.attention_window.max_window_size = N
-                    layer.attention_window.current_val[0] = 1.
-                    if masked:
-                        layer.attention_window.masked = True
-                    else:
-                        layer.attention_window.masked = False
-                z = layer.attention_window.init_mask()
-                print(z, math.ceil(z*N+16), layer.attention_window.masked)
-                windows.append(math.ceil(z*N+16))
-
-
-            print(sum(windows)/len(windows), max(windows), min(windows))
-            # exit()
-
             starter, ender = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
             timings = torch.zeros(repetitions, device=device)
 
@@ -133,14 +105,8 @@ class SkipformerTrainer(Trainer):
         if profile:
             with torch.no_grad():
                 with torch.profiler.profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA], record_shapes=False) as prof:
-                    # with record_function("model_inference"):
                     for _ in range(1):
                         model(**inputs)
-                # with torchprof.Profile(model, use_cuda=True, profile_memory=True) as prof:
-                #     model(**inputs)
-
-            # print(prof.display(show_events=False))
-
 
             print(prof.key_averages().table(sort_by="cuda_time_total", row_limit=10))
             print(prof.key_averages().table(sort_by="cpu_time_total", row_limit=10))
